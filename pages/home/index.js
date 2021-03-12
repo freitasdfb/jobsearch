@@ -6,7 +6,7 @@ const MenuButton = styled.button`
   margin: 20px;
 `;
 
-export function HomeMain() {
+export default function HomeMain() {
   return (
     <CardHome>
       <div className="col-sm-6 col-lg-12 col-md-6">

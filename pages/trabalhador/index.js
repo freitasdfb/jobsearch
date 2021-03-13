@@ -34,6 +34,7 @@ export default function Trabalhador() {
     cep: "",
     email: "",
     areaAtuacao: "",
+    telefone: "",
   };
 
   const formik = useFormik({
@@ -66,24 +67,17 @@ export default function Trabalhador() {
     }, 3000);
   }
 
-  function cpfMask(value) {
-    return value
-      .replace(/\D/g, "") // substitui qualquer caracter que nao seja numero por nada
-      .replace(/(\d{3})(\d)/, "$1.$2") // captura 2 grupos de numero o primeiro de 3 e o segundo de 1, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de numero
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})/, "$1-$2")
-      .replace(/(-\d{2})\d+?$/, "$1"); // captura 2 numeros seguidos de um traço e não deixa ser digitado mais nada
-  }
-
   return (
     <ContainerGlobal>
+      <Alert show={alertShow} variant={variantAlert}>
+        {alertText}
+      </Alert>
       <CardHome>
+        <div style={{display: "flex", alignItems: "center"}}>
+        <img style={{marginRight: "10px"}} src="http://www.trabalho.df.gov.br/wp-conteudo/themes/site-secretarias/img/ico-logo-gdf.svg"></img>
         <h2>Cadastro de trabalhador</h2>
-        <div style={{ maxWidth: "100%" }}>
-          <Alert show={alertShow} variant={variantAlert}>
-            {alertText}
-          </Alert>
         </div>
+        <div style={{ maxWidth: "100%" }}></div>
 
         <form onSubmit={formik.handleSubmit}>
           <label htmlFor="nome">Nome</label>
@@ -129,6 +123,18 @@ export default function Trabalhador() {
             className="form-control"
             onChange={formik.handleChange}
             value={formik.values.email}
+            required
+          />
+
+          <label htmlFor="telefone">Telefone</label>
+          <InputMask
+            mask="(99) 9 9999-9999"
+            type="text"
+            id="telefone"
+            placeholder="Telefone"
+            className="form-control"
+            onChange={formik.handleChange}
+            value={formik.values.telefone}
             required
           />
 

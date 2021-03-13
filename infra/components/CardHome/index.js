@@ -11,6 +11,7 @@ const CardBody = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+  position: relative;
   `
 
 const CardText = styled.div`

@@ -4,20 +4,28 @@ import { useFormik } from "formik";
 import styled from "styled-components";
 import axios from "axios";
 import React from "react";
-
+import { Alert } from "react-bootstrap";
+import InputMask from "react-input-mask";
 
 const SendButton = styled.button`
   margin-top: 20px;
 `;
 
-
 export default function Trabalhador() {
   const [areasAtuacao, setAreasAtuacao] = React.useState([{}]);
+  const [alertShow, setAlertShow] = React.useState(false);
+  const [variantAlert, setVariantAlert] = React.useState();
+  const [alertText, setAlertText] = React.useState("");
 
   React.useEffect(async () => {
-    const data = await axios.get("http://localhost:8080/areatuacao");
-    setAreasAtuacao(data.data);
-    console.log(areasAtuacao);
+    try {
+      const data = await axios.get(
+        "https://backend-jobsearch.herokuapp.com/areatuacao"
+      );
+      setAreasAtuacao(data.data);
+    } catch (error) {
+      handleAlert(error.message, "danger");
+    }
   }, []);
 
   const initialValues = {
@@ -25,26 +33,57 @@ export default function Trabalhador() {
     cpf: "",
     cep: "",
     email: "",
-    areaAtuacao: ''
+    areaAtuacao: "",
   };
 
   const formik = useFormik({
     initialValues: initialValues,
     onSubmit: async (values) => {
-      const json = JSON.stringify(values);
-      const res = await axios.post("http://localhost:8080/trabalhador", json, {
-        headers: {
-          // Overwrite Axios's automatically set Content-Type
-          "Content-Type": "application/json",
-        },
-      });
+      try {
+        const json = JSON.stringify(values);
+        const res = await axios.post(
+          "http://localhost:8080/trabalhador",
+          json,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        handleAlert("Cadastro realizado com sucesso", "success");
+      } catch (error) {
+        handleAlert(error.response.data.error, "danger");
+      }
     },
   });
+
+  function handleAlert(alertText, alertVariant) {
+    setVariantAlert(alertVariant);
+    setAlertText(alertText);
+    setAlertShow(!alertShow);
+    setTimeout(() => {
+      setAlertShow(false);
+    }, 3000);
+  }
+
+  function cpfMask(value) {
+    return value
+      .replace(/\D/g, "") // substitui qualquer caracter que nao seja numero por nada
+      .replace(/(\d{3})(\d)/, "$1.$2") // captura 2 grupos de numero o primeiro de 3 e o segundo de 1, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de numero
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})/, "$1-$2")
+      .replace(/(-\d{2})\d+?$/, "$1"); // captura 2 numeros seguidos de um traço e não deixa ser digitado mais nada
+  }
 
   return (
     <ContainerGlobal>
       <CardHome>
         <h2>Cadastro de trabalhador</h2>
+        <div style={{ maxWidth: "100%" }}>
+          <Alert show={alertShow} variant={variantAlert}>
+            {alertText}
+          </Alert>
+        </div>
 
         <form onSubmit={formik.handleSubmit}>
           <label htmlFor="nome">Nome</label>
@@ -59,7 +98,8 @@ export default function Trabalhador() {
           />
 
           <label htmlFor="cpf">CPF</label>
-          <input
+          <InputMask
+            mask="999.999.999-99"
             type="text"
             id="cpf"
             placeholder="CPF"
@@ -70,7 +110,8 @@ export default function Trabalhador() {
           />
 
           <label htmlFor="cep">CEP</label>
-          <input
+          <InputMask
+            mask="99999-999"
             type="text"
             id="cep"
             placeholder="CEP"
@@ -99,15 +140,13 @@ export default function Trabalhador() {
             onChange={formik.handleChange}
           >
             <option selected> Selecione sua área de atuação </option>
-            {areasAtuacao ? areasAtuacao.map((areas) => (
-              <option
-                key={areas.id}
-                value={areas.value}
-                >
-                {areas.nome}
-              </option>
-            )) : ''}
-
+            {areasAtuacao
+              ? areasAtuacao.map((areas) => (
+                  <option key={areas._id} value={areas.value}>
+                    {areas.nome}
+                  </option>
+                ))
+              : ""}
           </select>
 
           <SendButton

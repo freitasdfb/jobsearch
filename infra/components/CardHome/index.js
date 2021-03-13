@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 
 const CardHomeContainer = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
 `;

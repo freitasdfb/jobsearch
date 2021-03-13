@@ -42,7 +42,7 @@ export default function Trabalhador() {
       try {
         const json = JSON.stringify(values);
         const res = await axios.post(
-          "http://localhost:8080/trabalhador",
+          "https://backend-jobsearch.herokuapp.com/trabalhador",
           json,
           {
             headers: {

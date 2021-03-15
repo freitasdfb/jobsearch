@@ -44,7 +44,7 @@ export default function Empregador() {
           <h2> Pessoas disponíveis com especialidade em {especialidade}: </h2>
           </div>
           {listTrab.map((values) => (
-            <div style={{cursor: "pointer"}} className="col-3">
+            <div style={{cursor: "pointer"}} className="col col-12">
               <div
                 className="card"
                 style={{
